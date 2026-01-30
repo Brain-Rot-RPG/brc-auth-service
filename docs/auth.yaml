@@ -152,6 +152,9 @@ components:
           type: string
           format: email
           example: "tanguy@aura.fr"
+        isSigma:
+          type: boolean
+          example: false
         password:
           type: string
           format: password
