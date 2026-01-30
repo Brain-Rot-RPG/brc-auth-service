@@ -1,0 +1,175 @@
+openapi: 3.0.3
+info:
+  title: Brain Rot Chronicles - Auth Service
+  description: >
+    Service responsable de l'authentification des joueurs, de la génération des JWT 
+    et de la gestion des sessions. Il permet de transformer un simple "normie" en 
+    "Rizzler" authentifié.
+  version: 1.0.0
+servers:
+  - url: http://localhost:4007/api/v1/auth
+    description: Serveur de développement local
+
+paths:
+  /register:
+    post:
+      summary: Créer un nouveau compte joueur
+      tags:
+        - Inscription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegistration'
+      responses:
+        '201':
+          description: Joueur créé avec succès. Bienvenue dans la matrice.
+        '400':
+          description: Données invalides ou nom d'utilisateur déjà pris (L de ratio).
+
+  /login:
+    post:
+      summary: Authentifier un utilisateur et générer un jeton
+      tags:
+        - Session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Authentification réussie.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthToken'
+        '401':
+          description: Identifiants invalides (Pas assez de Rizz).
+
+  /logout:
+    post:
+      summary: Déconnexion (Révocation du token)
+      description: Invalide le Refresh Token en base de données et ajoute l'Access Token à la blacklist.
+      tags: [ Session ]
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+                  description: Le refresh token à supprimer de la DB.
+      responses:
+        '204':
+          description: Déconnexion réussie, tokens révoqués.
+        '401':
+          description: Token invalide.
+
+  /refresh:
+    post:
+      summary: Rafraîchir un jeton expiré
+      tags:
+        - Session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+      responses:
+        '200':
+          description: Nouveau jeton généré.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthToken'
+
+  /validate:
+    get:
+      summary: Vérifier la validité d'un jeton (Utilisé par la Gateway)
+      tags:
+        - Interne
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Le jeton est valide.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserIdentity'
+        '401':
+          description: Jeton expiré ou corrompu.
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    UserRegistration:
+      type: object
+      required:
+        - username
+        - password
+        - email
+      properties:
+        username:
+          type: string
+          example: "SkibidiSlayer67"
+        email:
+          type: string
+          format: email
+          example: "tanguy@aura.fr"
+        password:
+          type: string
+          format: password
+          minLength: 8
+
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+
+    AuthToken:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: JWT à utiliser pour les appels aux autres microservices.
+        refreshToken:
+          type: string
+          description: Jeton de longue durée pour renouveler la session.
+        expiresIn:
+          type: integer
+          example: 3600
+
+    UserIdentity:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        username:
+          type: string
+        role:
+          type: string
+          enum: [USER, ADMIN, SIGMA]
