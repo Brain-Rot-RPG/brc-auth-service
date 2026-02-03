@@ -1,11 +1,10 @@
 openapi: 3.0.3
 info:
-  title: Brain Rot Chronicles - Auth Service
+  title: Brain Rot Chronicles - Auth & User Service
   description: >
-    Service responsable de l'authentification des joueurs, de la génération des JWT 
-    et de la gestion des sessions. Permet de transformer un simple "normie" en 
-    "Rizzler" authentifié.
-  version: 1.0.0
+    Service monolithique (soupir) pour la gestion de l'authentification ET des utilisateurs.
+    On gère ici les comptes "Skibidi", les tokens, et les profils.
+  version: 1.1.0
 servers:
   - url: http://localhost:4007/api/v1/auth
     description: Serveur de développement local
@@ -73,11 +72,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                refreshToken:
-                  type: string
-                  description: Le refresh token à supprimer de la DB.
+              $ref: '#/components/schemas/RefreshTokenRequest'
       responses:
         '204':
           description: Déconnexion réussie.
@@ -95,10 +90,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                refreshToken:
-                  type: string
+              $ref: '#/components/schemas/RefreshTokenRequest'
       responses:
         '200':
           description: Nouveau jeton généré.
@@ -133,6 +125,48 @@ paths:
         '500':
           $ref: '#/components/responses/InternalError'
 
+  /users/me:
+    get:
+      summary: Récupérer son profil joueur
+      description: Retourne les informations du compte connecté.
+      tags: [Utilisateur]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Profil récupéré.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    patch:
+      summary: Mettre à jour son profil (Glow Up)
+      tags: [Utilisateur]
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        '200':
+          description: Profil mis à jour.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -147,6 +181,10 @@ components:
       properties:
         username:
           type: string
+          minLength: 3
+          maxLength: 20
+          pattern: '^[a-zA-Z0-9_]+$'
+          description: "Nom d utilisateur unique (alphanumérique et underscores uniquement)"
           example: "SkibidiSlayer67"
         email:
           type: string
@@ -158,7 +196,8 @@ components:
         password:
           type: string
           format: password
-          minLength: 8
+          minLength: 12
+          description: "Doit contenir au moins 12 caractères pour résister aux attaques brute-force."
 
     LoginRequest:
       type: object
@@ -166,6 +205,14 @@ components:
       properties:
         username: { type: string }
         password: { type: string }
+
+    RefreshTokenRequest:
+      type: object
+      required: [refreshToken]
+      properties:
+        refreshToken:
+          type: string
+          description: Le refresh token.
 
     AuthToken:
       type: object
@@ -179,6 +226,22 @@ components:
       properties:
         userId: { type: string, format: uuid }
         username: { type: string }
+
+    UserResponse:
+      type: object
+      required: [id, username, email, isSigma]
+      properties:
+        id: { type: string, format: uuid }
+        username: { type: string }
+        email: { type: string, format: email }
+        isSigma: { type: boolean }
+        createdAt: { type: string, format: date-time }
+
+    UserUpdate:
+      type: object
+      properties:
+        email: { type: string, format: email }
+        isSigma: { type: boolean, description: "Uniquement modifiable par un admin (ou triche)" }
 
     ErrorModel:
       type: object
