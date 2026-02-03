@@ -30,7 +30,9 @@ export class ExpressApp {
 
     private setupRoutes(): void {
         this.app.get('/health', (req, res) => { res.json({ status: 'ok', timestamp: new Date() }); });
-        this.app.use('/auth', this.authRouter);
+        
+        // API v1 prefix
+        this.app.use('/api/v1/auth', this.authRouter);
     }
 
     private setupDocs(): void {
