@@ -5,6 +5,7 @@ import { RefreshToken } from './application/use-cases/RefreshToken.js';
 import { RegisterUser } from './application/use-cases/RegisterUser.js';
 import { UpdateUser } from './application/use-cases/UpdateUser.js';
 import { logger  } from './infrastructure/logging/logger.js';
+import { RabbitMQConnection } from './infrastructure/messaging/RabbitMQConnection.js';
 import { BcryptPasswordService } from './infrastructure/security/BcryptPasswordService.js';
 import { JwtTokenService } from './infrastructure/security/JwtTokenService.js';
 import { PostgresDatabase } from './infrastructure/storage/postgres/Database.js';
@@ -15,9 +16,7 @@ import { AuthController } from './infrastructure/web/controllers/AuthController.
 import { AuthMiddleware } from './infrastructure/web/middlewares/AuthMiddleware.js';
 import { createAuthRouter } from './infrastructure/web/routes/auth.routes.js';
 import { Server } from './infrastructure/web/server.js';
-
 import { config } from './shared/config.js';
-import { RabbitMQConnection } from './infrastructure/messaging/RabbitMQConnection.js';
 
 async function bootstrap() {
     try {

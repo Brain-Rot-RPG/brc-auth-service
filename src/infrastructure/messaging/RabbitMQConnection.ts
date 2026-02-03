@@ -4,10 +4,11 @@ import { logger } from '../logging/logger.js';
 
 export class RabbitMQConnection {
     private static instance: RabbitMQConnection;
-    private connection: amqp.Connection | undefined;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private connection: any | undefined;
     private channel: amqp.Channel | undefined;
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
+     
     private constructor() {}
 
     static getInstance(): RabbitMQConnection {
@@ -27,7 +28,7 @@ export class RabbitMQConnection {
 
             logger.info('✅ Connected to RabbitMQ');
 
-            this.connection.on('error', (err) => {
+            this.connection.on('error', (err: unknown) => {
                 logger.error({ err }, 'RabbitMQ connection error');
             });
 
