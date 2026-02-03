@@ -16,8 +16,14 @@ import { AuthMiddleware } from './infrastructure/web/middlewares/AuthMiddleware.
 import { createAuthRouter } from './infrastructure/web/routes/auth.routes.js';
 import { Server } from './infrastructure/web/server.js';
 
+import { config } from './shared/config.js';
+import { RabbitMQConnection } from './infrastructure/messaging/RabbitMQConnection.js';
+
 async function bootstrap() {
     try {
+        // Initialize RabbitMQ
+        await RabbitMQConnection.getInstance().connect(config.rabbitmq.url);
+
         const db = PostgresDatabase.getInstance();
         await db.getPool().query('SELECT 1');
         logger.info('Database connection established');

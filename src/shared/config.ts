@@ -17,5 +17,8 @@ export const config = {
         refreshSecret: process.env.JWT_REFRESH_SECRET || 'dev_refresh_secret',
         accessExpiration: process.env.JWT_ACCESS_EXPIRATION || '15m',
         refreshExpiration: process.env.JWT_REFRESH_EXPIRATION || '7d',
+    },
+    rabbitmq: {
+        url: process.env.RABBIT_URL || 'amqp://brc_runner:rabbit_pass_secure@localhost:5672',
     }
 };

@@ -4,6 +4,8 @@ import type { UserRepository } from '../../domain/repositories/UserRepository.js
 import type { PasswordService } from '../../domain/services/PasswordService.js';
 import type { TokenService } from '../../domain/services/TokenService.js';
 import { AuthenticationError } from '../../errors/AuthenticationError.js';
+import {logger} from '../../infrastructure/logging/logger.js';
+import { logPublisher } from '../../infrastructure/messaging/LogPublisher.js';
 import type { LoginDTO } from '../../shared/dtos/LoginDTO.js';
 
 export class LoginUser {
@@ -29,6 +31,20 @@ export class LoginUser {
     
         // We only save the refresh token hash theoretically, but here we mock saving the full concept
         await this.tokenRepo.save(token);
+
+        try {
+            await logPublisher.publish({
+                service: 'brc-auth-service',
+                level: 'INFO',
+                message: 'User logged in successfully',
+                timestamp: new Date(),
+                payload: { userId: user.id, username: user.username },
+                traceId: crypto.randomUUID()
+            });
+        } catch (error) {
+            // Non-blocking log error
+            logger.error('Failed to log login event', error);
+        }
 
         return token;
     }
