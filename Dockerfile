@@ -28,4 +28,4 @@ USER node
 
 EXPOSE 4010
 
-CMD ["node", "dist/application/server.js"]
+CMD ["node", "dist/main.js"]
