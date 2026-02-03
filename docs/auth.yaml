@@ -73,11 +73,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                refreshToken:
-                  type: string
-                  description: Le refresh token à supprimer de la DB.
+              $ref: '#/components/schemas/RefreshTokenRequest'
       responses:
         '204':
           description: Déconnexion réussie.
@@ -95,10 +91,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                refreshToken:
-                  type: string
+              $ref: '#/components/schemas/RefreshTokenRequest'
       responses:
         '200':
           description: Nouveau jeton généré.
@@ -147,6 +140,10 @@ components:
       properties:
         username:
           type: string
+          minLength: 3
+          maxLength: 20
+          pattern: '^[a-zA-Z0-9_]+$'
+          description: "Nom d utilisateur unique (alphanumérique et underscores uniquement)"
           example: "SkibidiSlayer67"
         email:
           type: string
@@ -158,7 +155,8 @@ components:
         password:
           type: string
           format: password
-          minLength: 8
+          minLength: 12
+          description: "Doit contenir au moins 12 caractères pour résister aux attaques brute-force."
 
     LoginRequest:
       type: object
@@ -166,6 +164,14 @@ components:
       properties:
         username: { type: string }
         password: { type: string }
+
+    RefreshTokenRequest:
+      type: object
+      required: [refreshToken]
+      properties:
+        refreshToken:
+          type: string
+          description: Le refresh token.
 
     AuthToken:
       type: object
