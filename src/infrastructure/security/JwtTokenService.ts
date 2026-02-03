@@ -13,8 +13,15 @@ export class JwtTokenService implements TokenService {
             isSigma: user.isSigma
         };
 
-        const accessToken = jwt.sign(payload, config.jwt.secret, { expiresIn: config.jwt.accessExpiration });
-        const refreshToken = jwt.sign({ userId: user.id }, config.jwt.refreshSecret, { expiresIn: config.jwt.refreshExpiration });
+        const accessToken = jwt.sign(payload, config.jwt.secret, { 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            expiresIn: config.jwt.accessExpiration as any
+        });
+        
+        const refreshToken = jwt.sign({ userId: user.id }, config.jwt.refreshSecret, { 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            expiresIn: config.jwt.refreshExpiration as any
+        });
 
         // Calculate absolute expiration date for the response
         const now = new Date();

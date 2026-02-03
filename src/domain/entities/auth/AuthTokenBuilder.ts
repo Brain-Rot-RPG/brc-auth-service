@@ -3,7 +3,7 @@ import { AuthToken } from './AuthToken.js';
 export class AuthTokenBuilder {
     private _accessToken!: string;
     private _refreshToken!: string;
-    private _expiresIn!: number;
+    private _expiresIn!: number | Date;
     private _userId!: string;
 
     /**
@@ -23,10 +23,10 @@ export class AuthTokenBuilder {
     }
 
     /**
-     * Définit la durée de validité (en secondes ou timestamp)
+     * Définit la durée de validité (en secondes ou timestamp ou Date)
      * Le constructeur de AuthToken se chargera de la convertir en Date via le Validator.
      */
-    expiresIn(value: number): this {
+    expiresIn(value: number | Date): this {
         this._expiresIn = value;
         return this;
     }
