@@ -13,7 +13,9 @@ import { errorHandler } from './middlewares/ErrorHandler.js';
 export class ExpressApp {
     public app: Application;
 
-    constructor() {
+    constructor(
+        private readonly authRouter: express.Router
+    ) {
         this.app = express();
         this.setupMiddlewares();
         this.setupRoutes();
@@ -27,8 +29,8 @@ export class ExpressApp {
     }
 
     private setupRoutes(): void {
-        // TODO: Register controllers here
-        this.app.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date() }));
+        this.app.get('/health', (req, res) => { res.json({ status: 'ok', timestamp: new Date() }); });
+        this.app.use('/auth', this.authRouter);
     }
 
     private setupDocs(): void {

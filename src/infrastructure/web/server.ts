@@ -2,15 +2,12 @@ import type { Server as HttpServer } from 'node:http';
 
 import { config } from '../../shared/config.js';
 import { logger } from '../logging/logger.js';
-import { ExpressApp } from './app.js';
+import type { ExpressApp } from './app.js';
 
 export class Server {
     private httpServer?: HttpServer;
-    private readonly expressApp: ExpressApp;
 
-    constructor() {
-        this.expressApp = new ExpressApp();
-    }
+    constructor(private readonly expressApp: ExpressApp) {}
 
     public async start(): Promise<void> {
         return new Promise((resolve) => {

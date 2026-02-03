@@ -1,9 +1,10 @@
-import type {Request, Response } from 'express';
+import type {NextFunction,Request, Response } from 'express';
 
 import { BaseError } from '../../../errors/BaseError.js';
 import { logger } from '../../logging/logger.js';
 
-export const errorHandler = (err: Error, req: Request, res: Response): void => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const errorHandler = (err: Error, req: Request, res: Response, _next: NextFunction): void => {
     if (err instanceof BaseError) {
         logger.warn({ err }, `Handled error: ${err.message}`);
         
@@ -11,6 +12,17 @@ export const errorHandler = (err: Error, req: Request, res: Response): void => {
             status: 'error',
             code: err.name,
             message: err.message,
+            timestamp: new Date().toISOString()
+        });
+        return;
+    }
+
+    // Handle JWT Library Errors specifically
+    if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
+        res.status(401).json({
+            status: 'error',
+            code: 'AuthenticationError',
+            message: 'Invalid or expired token',
             timestamp: new Date().toISOString()
         });
         return;
