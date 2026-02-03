@@ -43,7 +43,7 @@ export class LoginUser {
             });
         } catch (error) {
             // Non-blocking log error
-            logger.error('Failed to log login event', error);
+            logger.error({ err: error }, 'Failed to log login event');
         }
 
         return token;
