@@ -1,4 +1,4 @@
-name: BRC Log Service - Full Pipeline
+name: BRC Auth Service - Full Pipeline
 
 on:
   push:
