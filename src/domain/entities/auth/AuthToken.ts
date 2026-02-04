@@ -10,7 +10,7 @@ export class AuthToken {
     constructor(
         accessToken: string,
         refreshToken: string,
-        expiresIn: number | Date, // Changed to allow Date directly or number timestamp
+        expiresIn: Date,
         userId: string
     ) {
         this._accessToken = Validator.string(accessToken, 'accessToken');

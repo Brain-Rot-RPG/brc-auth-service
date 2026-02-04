@@ -6,7 +6,8 @@ import stylistic from '@stylistic/eslint-plugin';
 
 export default tseslint.config(
     // 1. BLOC D'IGNORANCE GLOBALE
-    // On exclut les fichiers de config root pour éviter les conflits avec le scope de tsconfig (src/)
+    // On exclut les répertoires de build et les fichiers de configuration racine
+    // pour éviter les conflits avec le scope du tsconfig (src/)
     {
         ignores: [
             'dist/**',
@@ -18,12 +19,13 @@ export default tseslint.config(
     },
 
     // 2. CONFIGURATIONS DE BASE
+    // On active les recommandations d'ESLint et de TypeScript-ESLint
     eslint.configs.recommended,
     ...tseslint.configs.recommended,
 
-    // 3. RÈGLES PERSONNALISÉES ET PLUGINS
+    // 3. CONFIGURATION DES FICHIERS SOURCE
     {
-        files: ['**/*.ts'], // On applique ceci à tous les fichiers TypeScript restants
+        files: ['**/*.ts'],
         plugins: {
             'unused-imports': unusedImports,
             'simple-import-sort': simpleImportSort,
@@ -36,7 +38,7 @@ export default tseslint.config(
             },
         },
         rules: {
-            // --- Suppression des imports inutilisés ---
+            // --- Suppression automatique des imports inutilisés ---
             'unused-imports/no-unused-imports': 'error',
             'unused-imports/no-unused-vars': [
                 'warn',
@@ -48,11 +50,13 @@ export default tseslint.config(
                 }
             ],
 
-            // --- Tri automatique des imports ---
+            // --- Tri automatique des imports (ESM Ready) ---
+            // Force un ordre propre : imports node, internes, puis relatifs
             'simple-import-sort/imports': 'error',
             'simple-import-sort/exports': 'error',
 
             // --- Style & Formatage (@stylistic) ---
+            // Remplace les anciennes règles dépréciées d'ESLint
             '@stylistic/indent': ['error', 4],
             '@stylistic/quotes': ['error', 'single'],
             '@stylistic/semi': ['error', 'always'],
@@ -62,11 +66,15 @@ export default tseslint.config(
             }],
 
             // --- Rigueur TypeScript ---
-            '@typescript-eslint/no-explicit-any': 'error',
-            '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
+            '@typescript-eslint/no-explicit-any': 'error', // Interdiction du "any"
+            '@typescript-eslint/consistent-type-imports': [
+                'error',
+                { prefer: 'type-imports' }
+            ], // Force l'usage de 'import type'
 
             // --- Qualité de code ---
-            'no-console': 'error'
+            'no-console': 'error', // On ne laisse rien traîner en prod
+            'no-debugger': 'error'
         },
     }
 );
