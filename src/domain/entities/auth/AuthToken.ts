@@ -10,7 +10,7 @@ export class AuthToken {
     constructor(
         accessToken: string,
         refreshToken: string,
-        expiresIn: number | Date, // Changed to allow Date directly or number timestamp
+        expiresIn: Date | number,
         userId: string
     ) {
         this._accessToken = Validator.string(accessToken, 'accessToken');
@@ -21,7 +21,7 @@ export class AuthToken {
 
     get accessToken(): string { return this._accessToken; }
     get refreshToken(): string { return this._refreshToken; }
-    get expiresIn(): Date { return this._expiresIn; }
+    get expiresIn(): Date | number { return this._expiresIn; }
     get userId(): string { return this._userId; }
 
     static get builder(): AuthTokenBuilder {

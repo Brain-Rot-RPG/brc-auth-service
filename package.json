@@ -20,7 +20,7 @@
     "prebuild": "npm run clean",
     "dev": "cross-env NODE_ENV=development tsx watch src/main.ts",
     "start": "cross-env NODE_ENV=production node dist/main.js",
-    "test": "cross-env NODE_ENV=test jest --coverage",
+    "test": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --coverage",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
