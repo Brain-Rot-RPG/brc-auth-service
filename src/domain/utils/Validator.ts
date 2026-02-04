@@ -16,7 +16,7 @@ export class Validator {
      */
     static email(value: unknown, fieldName: string): string {
         const email = this.string(value, fieldName);
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
         if (!emailRegex.test(email)) {
             throw new InvalidDataError(fieldName, 'Le champ doit être un email valide.');
         }
